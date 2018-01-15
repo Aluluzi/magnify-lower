@@ -147,5 +147,7 @@ function addGrabCursor(imageData, stageData, stage, isRotated) {
  * @return {[Boolean]}      [description]
  */
 function isIE8() {
-    return (navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.match(/8./i) == "8.")
+    return (navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.match(/8./i) == "8.") ||
+        (navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.match(/7./i) == "7.")
+
 }

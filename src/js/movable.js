@@ -34,10 +34,10 @@ var movable = function (image, stage) {
 
         e.preventDefault();
 
-        var imageWidth = $('.magnify-image').width(),
-            imageHeight = $('.magnify-image').height(),
-            stageWidth = $('.magnify-stage').width(),
-            stageHeight = $('.magnify-stage').height();
+        var imageWidth = $(image).width(),
+            imageHeight = $(image).height(),
+            stageWidth = $(stage).width(),
+            stageHeight = $(stage).height();
 
         startX = e.clientX;
         startY = e.clientY;
@@ -46,12 +46,12 @@ var movable = function (image, stage) {
         δ = !self.isRotated ? 0 : (imageWidth - imageHeight) / 2;
 
         // Width or height difference can be use to limit image right or top position
-        // widthDiff = !self.isRotated ? (imageWidth - stageWidth) : (imageHeight - stageWidth);
-        // heightDiff = !self.isRotated ? (imageHeight - stageHeight) : (imageWidth - stageHeight);
+        widthDiff = !self.isRotated ? (imageWidth - stageWidth) : (imageHeight - stageWidth);
+        heightDiff = !self.isRotated ? (imageHeight - stageHeight) : (imageWidth - stageHeight);
 
         // Modal can be dragging if image is smaller to stage
-        isDragging = true;
-        isMoving = true;
+        isDragging = (widthDiff > 0 || heightDiff > 0) ? true : false;
+        isMoving = (widthDiff > 0 || heightDiff > 0) ? true : false;
 
         // Reclac the element position when mousedown
         // Fixed the issue of stage with a border
@@ -63,9 +63,8 @@ var movable = function (image, stage) {
             top = $('.magnify-image').position().top + δ;
         }
 
-
         // Add grabbing cursor
-        if (stage.hasClass('is-grab')) {
+        if(stage.hasClass('is-grab')){
             stage.addClass('is-grabbing');
         }
     }
@@ -87,32 +86,32 @@ var movable = function (image, stage) {
                 newLeft = relativeX + left,
                 newTop = relativeY + top;
 
-            // // vertical limit
-            // if (heightDiff > 0) {
+            // vertical limit
+            if (heightDiff > 0) {
 
-            //     if ((relativeY + top) > δ) {
-            //         newTop = δ;
-            //     } else if ((relativeY + top) < -heightDiff + δ) {
-            //         newTop = -heightDiff + δ;
-            //     }
+                if ((relativeY + top) > δ) {
+                    newTop = δ;
+                } else if ((relativeY + top) < -heightDiff + δ) {
+                    newTop = -heightDiff + δ;
+                }
 
-            // } else {
-            //     newTop = top;
-            // }
-            // // horizontal limit
-            // if (widthDiff > 0) {
+            } else {
+                newTop = top;
+            }
+            // horizontal limit
+            if (widthDiff > 0) {
 
-            //     if ((relativeX + left) > -δ) {
-            //         newLeft = -δ;
-            //     } else if ((relativeX + left) < -widthDiff - δ) {
-            //         newLeft = -widthDiff - δ;
-            //     }
+                if ((relativeX + left) > -δ) {
+                    newLeft = -δ;
+                } else if ((relativeX + left) < -widthDiff - δ) {
+                    newLeft = -widthDiff - δ;
+                }
 
-            // } else {
-            //     newLeft = left;
-            // }
+            } else {
+                newLeft = left;
+            }
 
-            $('.magnify-image').css({
+            $(image).css({
                 left: newLeft + 'px',
                 top: newTop + 'px'
             });
@@ -139,7 +138,7 @@ var movable = function (image, stage) {
 
     }
 
-    $D.on('mousedown.magnify', '.magnify-image', dragStart);
+    $(stage).on('mousedown.magnify', dragStart);
 
     $D.on('mousemove.magnify', dragMove);
 

@@ -252,14 +252,14 @@ Magnify.prototype = {
         // Get all magnify element
         this.$magnify = $magnify;
 
-        this.$magnify.find('.magnify-image').rotate({
-            angle: 0
-        });
+        // this.$magnify.find('.magnify-image').rotate({
+        //     angle: 0
+        // });
 
         this.$header = $magnify.find('.magnify-header');
         this.$stage = $magnify.find('.magnify-stage');
         this.$title = $magnify.find('.magnify-title');
-        this.$image = $magnify.find('.magnify-image');
+        this.$image = $magnify.find('.magnify-stage img');
         this.$close = $magnify.find('.magnify-button-close');
         this.$maximize = $magnify.find('.magnify-button-maximize');
         this.$zoomIn = $magnify.find('.magnify-button-zoom-in');
@@ -280,10 +280,10 @@ Magnify.prototype = {
             this.draggable(this.$magnify, this.$magnify, '.magnify-button');
         }
         if (this.options.movable) {
-            this.movable(this.$image, this.$stage);
+            this.movable('.magnify-image', this.$stage);
         }
         if (this.options.resizable) {
-            this.resizable(this.$magnify, this.$stage, this.$image, this.options.modalWidth, this.options.modalHeight);
+            this.resizable(this.$magnify, this.$stage, '.magnify-image', this.options.modalWidth, this.options.modalHeight);
         }
 
     },
@@ -581,7 +581,7 @@ Magnify.prototype = {
     zoomTo: function (ratio, origin, e) {
 
         var $image = $('.magnify-image'),
-            $stage = $('.magnify-stage'),
+            $stage = this.$stage,
             imgData = {
                 w: this.imageData.width,
                 h: this.imageData.height,
@@ -615,17 +615,17 @@ Magnify.prototype = {
         // zoom out & zoom in condition
         // It's important and it takes me a lot of time to get it
         // The conditions with image rotate 90 degree drive me crazy alomst!
-        // if (imgNewHeight <= stageData.h) {
-        //     newTop = (stageData.h - newHeight) / 2;
-        // } else {
-        //     newTop = newTop > δ ? δ : (newTop > (offsetY - δ) ? newTop : (offsetY - δ));
-        // }
+        if (imgNewHeight <= stageData.h) {
+            newTop = (stageData.h - newHeight) / 2;
+        } else {
+            newTop = newTop > δ ? δ : (newTop > (offsetY - δ) ? newTop : (offsetY - δ));
+        }
 
-        // if (imgNewWidth <= stageData.w) {
-        //     newLeft = (stageData.w - newWidth) / 2;
-        // } else {
-        //     newLeft = newLeft > -δ ? -δ : (newLeft > (offsetX + δ) ? newLeft : (offsetX + δ));
-        // }
+        if (imgNewWidth <= stageData.w) {
+            newLeft = (stageData.w - newWidth) / 2;
+        } else {
+            newLeft = newLeft > -δ ? -δ : (newLeft > (offsetX + δ) ? newLeft : (offsetX + δ));
+        }
 
         $image.css({
             width: Math.ceil(newWidth) + 'px',
@@ -812,7 +812,7 @@ Magnify.prototype = {
             self.close();
         });
 
-        $D.off('wheel mousewheel DOMMouseScroll','.magnify-image').on('wheel mousewheel DOMMouseScroll', '.magnify-image',function (e) {
+        this.$stage.off('wheel mousewheel DOMMouseScroll').on('wheel mousewheel DOMMouseScroll', function (e) {
             self.wheel(e);
         });
 
@@ -828,17 +828,19 @@ Magnify.prototype = {
             self.zoomTo(1, { x: self.$stage.width() / 2, y: self.$stage.height() / 2 }, e);
         });
 
-        this.$prev.off('click').on('click', function () {
-            self.jump(-1);
-        });
+        if (!isIE8()) {
+            this.$prev.off('click').on('click', function () {
+                self.jump(-1);
+            });
 
-        this.$fullscreen.off('click').on('click', function () {
-            self.fullscreen();
-        });
+            this.$fullscreen.off('click').on('click', function () {
+                self.fullscreen();
+            });
 
-        this.$next.off('click').on('click', function () {
-            self.jump(1);
-        });
+            this.$next.off('click').on('click', function () {
+                self.jump(1);
+            });
+        }
 
         this.$rotateLeft.off('click').on('click', function () {
             self.rotate(-90);

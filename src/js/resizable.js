@@ -131,8 +131,8 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
             heightDiff2 = (-offsetY + modalData.h) > minHeight ? (stageData.h - imgHeight - offsetY + δ) : (minHeight - (modalData.h - stageData.h) - imgHeight + δ);
 
         // Get image position in dragging
-        var imgLeft = $('.magnify-image').position().left - δ,
-            imgTop = $('.magnify-image').position().top + δ;
+        var imgLeft = $(image).position().left - δ,
+            imgTop = $(image).position().top + δ;
 
         var opts = {
             'e': {
@@ -196,10 +196,10 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
         };
 
         imageData = {
-            w: $('.magnify-image').width(),
-            h: $('.magnify-image').height(),
-            l: $('.magnify-image').position().left,
-            t: $('.magnify-image').position().top
+            w: $(image).width(),
+            h: $(image).height(),
+            l: $(image).position().left,
+            t: $(image).position().top
         };
 
         // δ is the difference between image width and height
@@ -230,7 +230,7 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
 
             var imageOpts = getImageOpts(direction, relativeX, relativeY);
 
-            $('.magnify-image').css(imageOpts);
+            $(image).css(imageOpts);
 
         }
 

@@ -7,11 +7,11 @@
  * --------------------------------------
  *
  * [image movable]
- * @param  {[Object]} image   [the image element]
  * @param  {[Object]} stage   [the stage element]
+ * @param  {[Object]} image   [the image element]
  */
 
-var movable = function (image, stage) {
+var movable = function (stage, image) {
 
     var self = this;
 

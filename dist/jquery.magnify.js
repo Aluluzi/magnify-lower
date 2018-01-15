@@ -245,7 +245,7 @@ Magnify.prototype = {
                                     <div class="magnify-toolbar">' + this.creatBtns(this.options.headToolbar, btnsTpl) + '</div>\
                                 </div>\
                                 <div class="magnify-stage">\
-                                    <img class="magnify-image" id="magnify-image" src="" alt="" title="" />\
+                                    <img class="magnify-image" id="magnify-image" src="" alt=""/>\
                                 </div>\
                                 <div class="magnify-footer">\
                                     <div class="magnify-toolbar">' + this.creatBtns(this.options.footToolbar, btnsTpl) + '</div>\
@@ -315,7 +315,7 @@ Magnify.prototype = {
             this.draggable(this.$magnify, this.$magnify, '.magnify-button');
         }
         if (this.options.movable) {
-            this.movable('.magnify-image', this.$stage);
+            this.movable(this.$stage, '.magnify-image');
         }
         if (this.options.resizable) {
             this.resizable(this.$magnify, this.$stage, '.magnify-image', this.options.modalWidth, this.options.modalHeight);
@@ -474,7 +474,11 @@ Magnify.prototype = {
             this.isMaximized = true;
         }
 
-        this.$image.attr('src', imgSrc);
+        if (isIE8()) {
+            this.$stage.html('<img class="magnify-image" id="magnify-image" src="' + imgSrc + '" alt="" />')
+        } else {
+            this.$image.attr('src', imgSrc);
+        }
 
         preloadImg(imgSrc, function (img) {
 
@@ -863,19 +867,17 @@ Magnify.prototype = {
             self.zoomTo(1, { x: self.$stage.width() / 2, y: self.$stage.height() / 2 }, e);
         });
 
-        if (!isIE8()) {
-            this.$prev.off('click').on('click', function () {
-                self.jump(-1);
-            });
+        this.$prev.off('click').on('click', function () {
+            self.jump(-1);
+        });
 
-            this.$fullscreen.off('click').on('click', function () {
-                self.fullscreen();
-            });
+        this.$fullscreen.off('click').on('click', function () {
+            self.fullscreen();
+        });
 
-            this.$next.off('click').on('click', function () {
-                self.jump(1);
-            });
-        }
+        this.$next.off('click').on('click', function () {
+            self.jump(1);
+        });
 
         this.$rotateLeft.off('click').on('click', function () {
             self.rotate(-90);
@@ -1046,11 +1048,11 @@ $.extend(Magnify.prototype, {
  * --------------------------------------
  *
  * [image movable]
- * @param  {[Object]} image   [the image element]
  * @param  {[Object]} stage   [the stage element]
+ * @param  {[Object]} image   [the image element]
  */
 
-var movable = function (image, stage) {
+var movable = function (stage, image) {
 
     var self = this;
 

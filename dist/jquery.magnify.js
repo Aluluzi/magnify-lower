@@ -294,7 +294,7 @@ Magnify.prototype = {
         this.$header = $magnify.find('.magnify-header');
         this.$stage = $magnify.find('.magnify-stage');
         this.$title = $magnify.find('.magnify-title');
-        this.$image = $magnify.find('.magnify-stage img');
+        this.$image = $magnify.find('.magnify-image');
         this.$close = $magnify.find('.magnify-button-close');
         this.$maximize = $magnify.find('.magnify-button-maximize');
         this.$zoomIn = $magnify.find('.magnify-button-zoom-in');
@@ -424,7 +424,7 @@ Magnify.prototype = {
             scale = Math.min(stageData.w / img.height, stageData.h / img.width, 1);
         }
 
-        $('.magnify-image').css({
+        this.$stage.find('.magnify-image').css({
             width: Math.floor(img.width * scale) + 'px',
             height: Math.floor(img.height * scale) + 'px',
             left: (stageData.w - img.width * scale) / 2 + 'px',
@@ -607,7 +607,7 @@ Magnify.prototype = {
             ratio = 1;
         }
 
-        ratio = $('.magnify-image').width() / this.imageData.originalWidth * ratio;
+        ratio = this.$stage.find('.magnify-image').width() / this.imageData.originalWidth * ratio;
 
         // min image size
         ratio = Math.max(ratio, this.options.minRatio);
@@ -619,7 +619,7 @@ Magnify.prototype = {
     },
     zoomTo: function (ratio, origin, e) {
 
-        var $image = $('.magnify-image'),
+        var $image = this.$stage.find('.magnify-image'),
             $stage = this.$stage,
             imgData = {
                 w: this.imageData.width,
@@ -707,7 +707,7 @@ Magnify.prototype = {
     },
     rotateTo: function (angle) {
 
-        this.$magnify.find('.magnify-image').rotate({
+        this.$stage.find('.magnify-image').rotate({
             angle: angle
         });
 
@@ -1075,8 +1075,8 @@ var movable = function (stage, image) {
 
         e.preventDefault();
 
-        var imageWidth = $(image).width(),
-            imageHeight = $(image).height(),
+        var imageWidth = $(stage).find(image).width(),
+            imageHeight = $(stage).find(image).height(),
             stageWidth = $(stage).width(),
             stageHeight = $(stage).height();
 
@@ -1097,11 +1097,11 @@ var movable = function (stage, image) {
         // Reclac the element position when mousedown
         // Fixed the issue of stage with a border
         if (isIE8()) {
-            left = $('.magnify-image').position().left;
-            top = $('.magnify-image').position().top;
+            left = $(stage).find(image).position().left;
+            top = $(stage).find(image).position().top;
         } else {
-            left = $('.magnify-image').position().left - δ;
-            top = $('.magnify-image').position().top + δ;
+            left = $(stage).find(image).position().left - δ;
+            top = $(stage).find(image).position().top + δ;
         }
 
         // Add grabbing cursor
@@ -1152,7 +1152,7 @@ var movable = function (stage, image) {
                 newLeft = left;
             }
 
-            $(image).css({
+            $(stage).find(image).css({
                 left: newLeft + 'px',
                 top: newTop + 'px'
             });
@@ -1197,7 +1197,7 @@ $.extend(Magnify.prototype, {
  * 2.keep image in stage center
  * 3.~
  * ------------------------------
- * 
+ *
  * [resizable]
  * @param  {[Object]} modal       [the modal element]
  * @param  {[Object]} stage       [the stage element]
@@ -1324,8 +1324,8 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
             heightDiff2 = (-offsetY + modalData.h) > minHeight ? (stageData.h - imgHeight - offsetY + δ) : (minHeight - (modalData.h - stageData.h) - imgHeight + δ);
 
         // Get image position in dragging
-        var imgLeft = $(image).position().left - δ,
-            imgTop = $(image).position().top + δ;
+        var imgLeft = $(stage).find(image).position().left - δ,
+            imgTop = $(stage).find(image).position().top + δ;
 
         var opts = {
             'e': {
@@ -1389,10 +1389,10 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
         };
 
         imageData = {
-            w: $(image).width(),
-            h: $(image).height(),
-            l: $(image).position().left,
-            t: $(image).position().top
+            w: $(stage).find(image).width(),
+            h: $(stage).find(image).height(),
+            l: $(stage).find(image).position().left,
+            t: $(stage).find(image).position().top
         };
 
         // δ is the difference between image width and height
@@ -1423,7 +1423,7 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
 
             var imageOpts = getImageOpts(direction, relativeX, relativeY);
 
-            $(image).css(imageOpts);
+            $(stage).find(image).css(imageOpts);
 
         }
 
@@ -1435,8 +1435,8 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
         // Add grab cursor
         if (isResizing) {
             addGrabCursor(
-                { w: imgWidth, h: imgHeight }, 
-                { w: $(stage).width(), h: $(stage).height() }, 
+                { w: imgWidth, h: imgHeight },
+                { w: $(stage).width(), h: $(stage).height() },
                 stage
             );
         }

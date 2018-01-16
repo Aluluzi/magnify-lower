@@ -4,7 +4,7 @@
  * 2.keep image in stage center
  * 3.~
  * ------------------------------
- * 
+ *
  * [resizable]
  * @param  {[Object]} modal       [the modal element]
  * @param  {[Object]} stage       [the stage element]
@@ -131,8 +131,8 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
             heightDiff2 = (-offsetY + modalData.h) > minHeight ? (stageData.h - imgHeight - offsetY + δ) : (minHeight - (modalData.h - stageData.h) - imgHeight + δ);
 
         // Get image position in dragging
-        var imgLeft = $(image).position().left - δ,
-            imgTop = $(image).position().top + δ;
+        var imgLeft = $(stage).find(image).position().left - δ,
+            imgTop = $(stage).find(image).position().top + δ;
 
         var opts = {
             'e': {
@@ -196,10 +196,10 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
         };
 
         imageData = {
-            w: $(image).width(),
-            h: $(image).height(),
-            l: $(image).position().left,
-            t: $(image).position().top
+            w: $(stage).find(image).width(),
+            h: $(stage).find(image).height(),
+            l: $(stage).find(image).position().left,
+            t: $(stage).find(image).position().top
         };
 
         // δ is the difference between image width and height
@@ -230,7 +230,7 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
 
             var imageOpts = getImageOpts(direction, relativeX, relativeY);
 
-            $(image).css(imageOpts);
+            $(stage).find(image).css(imageOpts);
 
         }
 
@@ -242,8 +242,8 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
         // Add grab cursor
         if (isResizing) {
             addGrabCursor(
-                { w: imgWidth, h: imgHeight }, 
-                { w: $(stage).width(), h: $(stage).height() }, 
+                { w: imgWidth, h: imgHeight },
+                { w: $(stage).width(), h: $(stage).height() },
                 stage
             );
         }

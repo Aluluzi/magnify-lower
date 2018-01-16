@@ -34,8 +34,8 @@ var movable = function (stage, image) {
 
         e.preventDefault();
 
-        var imageWidth = $(image).width(),
-            imageHeight = $(image).height(),
+        var imageWidth = $(stage).find(image).width(),
+            imageHeight = $(stage).find(image).height(),
             stageWidth = $(stage).width(),
             stageHeight = $(stage).height();
 
@@ -56,11 +56,11 @@ var movable = function (stage, image) {
         // Reclac the element position when mousedown
         // Fixed the issue of stage with a border
         if (isIE8()) {
-            left = $('.magnify-image').position().left;
-            top = $('.magnify-image').position().top;
+            left = $(stage).find(image).position().left;
+            top = $(stage).find(image).position().top;
         } else {
-            left = $('.magnify-image').position().left - δ;
-            top = $('.magnify-image').position().top + δ;
+            left = $(stage).find(image).position().left - δ;
+            top = $(stage).find(image).position().top + δ;
         }
 
         // Add grabbing cursor
@@ -111,7 +111,7 @@ var movable = function (stage, image) {
                 newLeft = left;
             }
 
-            $(image).css({
+            $(stage).find(image).css({
                 left: newLeft + 'px',
                 top: newTop + 'px'
             });

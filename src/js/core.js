@@ -259,7 +259,7 @@ Magnify.prototype = {
         this.$header = $magnify.find('.magnify-header');
         this.$stage = $magnify.find('.magnify-stage');
         this.$title = $magnify.find('.magnify-title');
-        this.$image = $magnify.find('.magnify-stage img');
+        this.$image = $magnify.find('.magnify-image');
         this.$close = $magnify.find('.magnify-button-close');
         this.$maximize = $magnify.find('.magnify-button-maximize');
         this.$zoomIn = $magnify.find('.magnify-button-zoom-in');
@@ -389,7 +389,7 @@ Magnify.prototype = {
             scale = Math.min(stageData.w / img.height, stageData.h / img.width, 1);
         }
 
-        $('.magnify-image').css({
+        this.$stage.find('.magnify-image').css({
             width: Math.floor(img.width * scale) + 'px',
             height: Math.floor(img.height * scale) + 'px',
             left: (stageData.w - img.width * scale) / 2 + 'px',
@@ -572,7 +572,7 @@ Magnify.prototype = {
             ratio = 1;
         }
 
-        ratio = $('.magnify-image').width() / this.imageData.originalWidth * ratio;
+        ratio = this.$stage.find('.magnify-image').width() / this.imageData.originalWidth * ratio;
 
         // min image size
         ratio = Math.max(ratio, this.options.minRatio);
@@ -584,7 +584,7 @@ Magnify.prototype = {
     },
     zoomTo: function (ratio, origin, e) {
 
-        var $image = $('.magnify-image'),
+        var $image = this.$stage.find('.magnify-image'),
             $stage = this.$stage,
             imgData = {
                 w: this.imageData.width,
@@ -672,7 +672,7 @@ Magnify.prototype = {
     },
     rotateTo: function (angle) {
 
-        this.$magnify.find('.magnify-image').rotate({
+        this.$stage.find('.magnify-image').rotate({
             angle: angle
         });
 

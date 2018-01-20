@@ -20,6 +20,7 @@
   -webkit-box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.3);
           box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.3);
   z-index: 1090;
+  cursor: default;
 }
 
 .magnify-header {
@@ -49,7 +50,6 @@
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  cursor: default;
 }
 
 .magnify-stage {
@@ -116,22 +116,6 @@
 
 .magnify-button.magnify-button-maximize:hover {
   background-color: #525252;
-}
-
-.is-grab {
-  cursor: move;
-  cursor: -webkit-grab;
-  cursor: grab;
-}
-
-.is-grabbing {
-  cursor: move;
-  cursor: -webkit-grabbing;
-  cursor: grabbing;
-}
-
-html {
-  -ms-overflow-style: scrollbar;
 }
 
 .magnify-loading {
@@ -416,6 +400,18 @@ html {
   bottom: 0;
   right: 0;
   border-width: 0;
+}
+
+.is-grab {
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.is-grabbing {
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
 }
 
 /*# sourceMappingURL=jquery.magnify.css.map */

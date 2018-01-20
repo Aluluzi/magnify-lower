@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Private vars
  */
 
@@ -59,7 +59,8 @@ var $W = $(window),
             actualSize: 'actual-size',
             rotateLeft: 'rotate-left',
             rotateRight: 'rotate-right'
-        }
+        },
+        multiInstances: true
         // beforeOpen:$.noop,
         // afterOpen:$.noop,
         // beforeClose:$.noop,
@@ -132,8 +133,6 @@ Magnify.prototype = {
 
     init: function (el, options) {
 
-        this.open();
-
         // Get image src
         var imgSrc = this.getImgSrc(el);
 
@@ -154,7 +153,20 @@ Magnify.prototype = {
 
         }
 
+        this.open();
+
         this.loadImg(imgSrc);
+
+        // draggable & movable & resizable
+        if (this.options.draggable) {
+            this.draggable(this.$magnify, this.$magnify, '.magnify-button');
+        }
+        if (this.options.movable) {
+            this.movable(this.$stage, '.magnify-image');
+        }
+        if (this.options.resizable) {
+            this.resizable(this.$magnify, this.$stage, '.magnify-image', this.options.modalWidth, this.options.modalHeight);
+        }
 
     },
     creatBtns: function (toolbar, btns) {
@@ -210,7 +222,7 @@ Magnify.prototype = {
                                     <div class="magnify-toolbar">' + this.creatBtns(this.options.headToolbar, btnsTpl) + '</div>\
                                 </div>\
                                 <div class="magnify-stage">\
-                                    <img class="magnify-image" id="magnify-image" src="" alt=""/>\
+                                    <img class="magnify-image" src="" alt=""/>\
                                 </div>\
                                 <div class="magnify-footer">\
                                     <div class="magnify-toolbar">' + this.creatBtns(this.options.footToolbar, btnsTpl) + '</div>\
@@ -222,6 +234,9 @@ Magnify.prototype = {
     },
     open: function () {
 
+		if(!this.options.multiInstances){
+            $('.magnify-modal').eq(0).remove();
+        }
         // Fixed modal position bug
         if (!$('.magnify-modal').length && this.options.fixedContent) {
 
@@ -230,7 +245,7 @@ Magnify.prototype = {
             if (hasScrollbar()) {
                 var scrollbarWidth = getScrollbarWidth();
                 if (scrollbarWidth) {
-                    $('html').css({ 'margin-right': scrollbarWidth });
+                    $('html').css({ 'padding-right': scrollbarWidth });
                 }
             }
 
@@ -239,6 +254,8 @@ Magnify.prototype = {
         this.isOpened = isOpened = true;
 
         this.build();
+
+        this.setModalPos(this.$magnify);
 
     },
     build: function () {
@@ -251,10 +268,6 @@ Magnify.prototype = {
 
         // Get all magnify element
         this.$magnify = $magnify;
-
-        // this.$magnify.find('.magnify-image').rotate({
-        //     angle: 0
-        // });
 
         this.$header = $magnify.find('.magnify-header');
         this.$stage = $magnify.find('.magnify-stage');
@@ -273,18 +286,6 @@ Magnify.prototype = {
 
         $('body').append($magnify);
 
-        this.setModalPos($magnify);
-
-        // draggable & movable & resizable
-        if (this.options.draggable) {
-            this.draggable(this.$magnify, this.$magnify, '.magnify-button');
-        }
-        if (this.options.movable) {
-            this.movable(this.$stage, '.magnify-image');
-        }
-        if (this.options.resizable) {
-            this.resizable(this.$magnify, this.$stage, '.magnify-image', this.options.modalWidth, this.options.modalHeight);
-        }
 
     },
     close: function (el) {
@@ -301,7 +302,7 @@ Magnify.prototype = {
 
         // Fixed modal position bug
         if (!$('.magnify-modal').length && this.options.fixedContent) {
-            $('html').css({ 'overflow': '', 'margin-right': '' });
+            $('html').css({ 'overflow': '', 'padding-right': '' });
         }
 
         // off events
@@ -407,7 +408,8 @@ Magnify.prototype = {
             top: (stageData.h - img.height * scale) / 2
         });
 
-        addGrabCursor(
+		// Set grab cursor
+        setGrabCursor(
             { w: this.$image.width(), h: this.$image.height() },
             { w: this.$stage.width(), h: this.$stage.height() },
             this.$stage,
@@ -649,8 +651,8 @@ Magnify.prototype = {
             top: newTop
         });
 
-        // Add grab cursor
-        addGrabCursor(
+        // Set grab cursor
+        setGrabCursor(
             { w: imgNewWidth, h: imgNewHeight },
             { w: stageData.w, h: stageData.h },
             this.$stage
@@ -762,11 +764,11 @@ Magnify.prototype = {
             altKey = e.altKey || e.metaKey;
 
         switch (keyCode) {
-            // ←
+            // â†?
             case 37:
                 self.jump(-1);
                 break;
-            // →
+            // â†?
             case 39:
                 self.jump(1);
                 break;

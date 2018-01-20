@@ -6,7 +6,7 @@
  * |  |  |  |   _   |  \_/   |  |\   |_| |_|  |      |  |
  * |__|  |__|__| |__|\____/|_|__| \__|_____|__|      |__|
  *
- * jquery.magnify.js v0.1.0
+ * jquery.magnify.js v0.3.2
  *
  * A jQuery plugin to view images just like in windows
  *
@@ -33,7 +33,7 @@
     'use strict';
 
 
-/**
+﻿/**
  * Private vars
  */
 
@@ -94,7 +94,8 @@ var $W = $(window),
             actualSize: 'actual-size',
             rotateLeft: 'rotate-left',
             rotateRight: 'rotate-right'
-        }
+        },
+        multiInstances: true
         // beforeOpen:$.noop,
         // afterOpen:$.noop,
         // beforeClose:$.noop,
@@ -167,8 +168,6 @@ Magnify.prototype = {
 
     init: function (el, options) {
 
-        this.open();
-
         // Get image src
         var imgSrc = this.getImgSrc(el);
 
@@ -189,7 +188,20 @@ Magnify.prototype = {
 
         }
 
+        this.open();
+
         this.loadImg(imgSrc);
+
+        // draggable & movable & resizable
+        if (this.options.draggable) {
+            this.draggable(this.$magnify, this.$magnify, '.magnify-button');
+        }
+        if (this.options.movable) {
+            this.movable(this.$stage, '.magnify-image');
+        }
+        if (this.options.resizable) {
+            this.resizable(this.$magnify, this.$stage, '.magnify-image', this.options.modalWidth, this.options.modalHeight);
+        }
 
     },
     creatBtns: function (toolbar, btns) {
@@ -245,7 +257,7 @@ Magnify.prototype = {
                                     <div class="magnify-toolbar">' + this.creatBtns(this.options.headToolbar, btnsTpl) + '</div>\
                                 </div>\
                                 <div class="magnify-stage">\
-                                    <img class="magnify-image" id="magnify-image" src="" alt=""/>\
+                                    <img class="magnify-image" src="" alt=""/>\
                                 </div>\
                                 <div class="magnify-footer">\
                                     <div class="magnify-toolbar">' + this.creatBtns(this.options.footToolbar, btnsTpl) + '</div>\
@@ -257,6 +269,9 @@ Magnify.prototype = {
     },
     open: function () {
 
+		if(!this.options.multiInstances){
+            $('.magnify-modal').eq(0).remove();
+        }
         // Fixed modal position bug
         if (!$('.magnify-modal').length && this.options.fixedContent) {
 
@@ -265,7 +280,7 @@ Magnify.prototype = {
             if (hasScrollbar()) {
                 var scrollbarWidth = getScrollbarWidth();
                 if (scrollbarWidth) {
-                    $('html').css({ 'margin-right': scrollbarWidth });
+                    $('html').css({ 'padding-right': scrollbarWidth });
                 }
             }
 
@@ -274,6 +289,8 @@ Magnify.prototype = {
         this.isOpened = isOpened = true;
 
         this.build();
+
+        this.setModalPos(this.$magnify);
 
     },
     build: function () {
@@ -286,10 +303,6 @@ Magnify.prototype = {
 
         // Get all magnify element
         this.$magnify = $magnify;
-
-        // this.$magnify.find('.magnify-image').rotate({
-        //     angle: 0
-        // });
 
         this.$header = $magnify.find('.magnify-header');
         this.$stage = $magnify.find('.magnify-stage');
@@ -308,18 +321,6 @@ Magnify.prototype = {
 
         $('body').append($magnify);
 
-        this.setModalPos($magnify);
-
-        // draggable & movable & resizable
-        if (this.options.draggable) {
-            this.draggable(this.$magnify, this.$magnify, '.magnify-button');
-        }
-        if (this.options.movable) {
-            this.movable(this.$stage, '.magnify-image');
-        }
-        if (this.options.resizable) {
-            this.resizable(this.$magnify, this.$stage, '.magnify-image', this.options.modalWidth, this.options.modalHeight);
-        }
 
     },
     close: function (el) {
@@ -336,7 +337,7 @@ Magnify.prototype = {
 
         // Fixed modal position bug
         if (!$('.magnify-modal').length && this.options.fixedContent) {
-            $('html').css({ 'overflow': '', 'margin-right': '' });
+            $('html').css({ 'overflow': '', 'padding-right': '' });
         }
 
         // off events
@@ -442,7 +443,8 @@ Magnify.prototype = {
             top: (stageData.h - img.height * scale) / 2
         });
 
-        addGrabCursor(
+		// Set grab cursor
+        setGrabCursor(
             { w: this.$image.width(), h: this.$image.height() },
             { w: this.$stage.width(), h: this.$stage.height() },
             this.$stage,
@@ -684,8 +686,8 @@ Magnify.prototype = {
             top: newTop
         });
 
-        // Add grab cursor
-        addGrabCursor(
+        // Set grab cursor
+        setGrabCursor(
             { w: imgNewWidth, h: imgNewHeight },
             { w: stageData.w, h: stageData.h },
             this.$stage
@@ -797,11 +799,11 @@ Magnify.prototype = {
             altKey = e.altKey || e.metaKey;
 
         switch (keyCode) {
-            // ←
+            // â†?
             case 37:
                 self.jump(-1);
                 break;
-            // →
+            // â†?
             case 39:
                 self.jump(1);
                 break;
@@ -1105,8 +1107,8 @@ var movable = function (stage, image) {
         }
 
         // Add grabbing cursor
-        if(stage.hasClass('is-grab')){
-            stage.addClass('is-grabbing');
+        if (stage.hasClass('is-grab')) {
+            $('html,body,.magnify-modal,.magnify-stage,.magnify-button,.resizable-handle').addClass('is-grabbing');
         }
     }
 
@@ -1165,8 +1167,6 @@ var movable = function (stage, image) {
 
         }
 
-        // return false;
-
     }
 
     var dragEnd = function (e) {
@@ -1175,7 +1175,7 @@ var movable = function (stage, image) {
         isMoving = false;
 
         // Remove grabbing cursor
-        stage.removeClass('is-grabbing');
+        $('html,body,.magnify-modal,.magnify-stage,.magnify-button,.resizable-handle').removeClass('is-grabbing');
 
     }
 
@@ -1401,6 +1401,10 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
         imgHeight = !self.isRotated ? imageData.h : imageData.w;
 
         direction = dir;
+		
+		// Add resizable cursor 
+        $('html,body,.magnify-modal,.magnify-stage,.magnify-button').css('cursor', dir + '-resize');
+		
     }
 
     var dragMove = function (e) {
@@ -1427,14 +1431,12 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
 
         }
 
-        // return false;
-
     }
     var dragEnd = function (e) {
 
-        // Add grab cursor
+        // Set grab cursor
         if (isResizing) {
-            addGrabCursor(
+            setGrabCursor(
                 { w: imgWidth, h: imgHeight },
                 { w: $(stage).width(), h: $(stage).height() },
                 stage
@@ -1444,6 +1446,9 @@ var resizable = function (modal, stage, image, minWidth, minHeight) {
         isDragging = false;
         isResizing = false;
 
+		// Remove resizable cursor
+        $('html,body,.magnify-modal,.magnify-stage,.magnify-button').css('cursor','');
+		
     }
 
     $.each(resizableHandles, function (dir, handle) {
@@ -1586,13 +1591,13 @@ function getScrollbarWidth() {
 }
 
 /**
- * [addGrabCursor]
+ * [setGrabCursor]
  * @param {[Object]}  imageData    [description]
  * @param {[Object]}  stageData    [description]
  * @param {[Object]}  stage        [description]
  * @param {[Boolean]} isRotate     [description]
  */
-function addGrabCursor(imageData, stageData, stage, isRotated) {
+function setGrabCursor(imageData, stageData, stage, isRotated) {
 
     var imageWidth = !isRotated ? imageData.w : imageData.h,
         imageHeight = !isRotated ? imageData.h : imageData.w;
@@ -1614,4 +1619,5 @@ function isIE8() {
         (navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.match(/7./i) == "7.")
 
 }
+
 });
